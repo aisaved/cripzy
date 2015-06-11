@@ -110,15 +110,20 @@ CREATE TABLE movie(
        movie_rt_id integer,
        movie_title varchar(255),
        movie_synopsis text,
-       movie_poster_url varchar(255),
+       movie_poster_main varchar(255),
+       movie_poster_thumbnail varchar(255),
        movie_genre varchar(50),
        movie_director varchar (255),
        movie_writer varchar(255),
+       movie_release_date_theater_text varchar(50),
+       movie_release_date_dvd_text varchar(50),
        movie_release_date_theater date,
        movie_release_date_dvd date,
-       movie_runtime integer,
-       movie_box_office_us varchar(10),
-       movie_actors text);
+       movie_runtime varchar(20),
+       movie_box_office_us varchar(20),
+       movie_actors text,
+       movie_tomato_rating integer
+       );
 
 CREATE TABLE data_log(
        data_log_id serial PRIMARY KEY,

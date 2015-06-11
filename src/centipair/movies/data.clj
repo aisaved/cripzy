@@ -1,10 +1,11 @@
 (ns centipair.movies.data
- (:require [clj-http.client :as client]
-           [cheshire.core :refer [parse-string]]
-           [clojure.core.async
-             :as a
-             :refer [>! <! >!! <!! go chan buffer close! thread
-                     alts! alts!! timeout]]))
+    (:require [clj-http.client :as client]
+              [cheshire.core :refer [parse-string]]
+              [centipair.movies.models :refer [create-movie]]
+              [clojure.core.async
+               :as a
+               :refer [>! <! >!! <!! go chan buffer close! thread
+                       alts! alts!! timeout]]))
 
 
 
@@ -48,11 +49,57 @@
                :sortBy "release"}))
 
 
+(defn omdb-params
+  [omdb-movie rt-movie]
+  {:movie_rt_id (:id rt-movie)
+   :movie_title (:title rt-movie)
+   :movie_synopsis (:Plot omdb-movie)
+   :movie_poster_main (:secondary (:posters rt-movie))
+   :movie_poster_thumbnail (:primary (:posters rt-movie))
+   :movie_genre (:Genre omdb-movie)
+   :movie_director (:Director omdb-movie)
+   :movie_writer (:Writer omdb-movie)
+   :movie_release_date_theater_text (:Released omdb-movie)
+   :movie_release_date_dvd_text (:DVD omdb-movie)
+   :movie_runtime (:Runtime rt-movie)
+   :movie_box_office_us (:BoxOffice omdb-movie)
+   :movie_actors (:Actors omdb-movie)
+   :movie_tomato_rating (:tomatoScore rt-movie)})
 
-(defn save-movie [title-rtid]
-  (let [movie-data (fetch-omdb (:title title-rtid))]
+
+(defn rt-params
+  [rt-movie]
+  
+  )
+
+
+(defn save-movie
+  "Params required
+  movie_rt_id integer,
+  movie_title varchar(255),
+  movie_synopsis text,
+  movie_poster_main varchar(255),
+  movie_poster_thumbnail varchar(255),
+  movie_genre varchar(50),
+  movie_director varchar (255),
+  movie_writer varchar(255),
+  movie_release_date_theater_text date,
+  movie_release_date_dvd_text date,
+  movie_release_date_theater date,
+  movie_release_date_dvd date,
+  movie_runtime varchar(10),
+  movie_box_office_us varchar(10),
+  movie_actors text,
+  movie_tomato_rating integer,
+  "
+  [rt-movie]
+  (let [omdb-movie (fetch-omdb (:title rt-movie))]
+    
     (println "####################---saving movie---#####################")
-    (println (:Title movie-data))))
+    
+    (if (nil? (:Title omdb-movie))
+      (println "movie not found")
+      (create-movie (omdb-params omdb-movie rt-movie)))))
 
 
 (defn process-dvd
@@ -60,7 +107,7 @@
   (let [dvd-data (:results (fetch-rt-dvd page-limit))]
     (doseq [each dvd-data]
       (go
-        (>! movie-channel {:title (:title each) :rtid (:id each)})))))
+        (>! movie-channel each)))))
 
 
 (defn init-movie-channel
