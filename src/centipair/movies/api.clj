@@ -2,13 +2,19 @@
   (:use compojure.core)
    (:require [liberator.core :refer [resource defresource]]
              [centipair.core.contrib.response :as response]
-             [centipair.core.auth.user.models :as user-models]))
+             [centipair.movies.models :as movie-models]))
 
 
 
 (defresource api-dvd-releases [& [source]]
   :available-media-types ["application/json"]
   :allowed-methods [:get]
-  :handle-ok (fn [context] ))
+  :handle-ok (fn [context]
+               (response/liberator-json-response
+                (movie-models/get-movies 
+                 (get-in context [:request :params :page])
+                 (get-in context [:request :params :limit])))))
 
 
+(defroutes api-movie-routes
+  (GET "/api/1/movies/dvd" [] (api-dvd-releases)))

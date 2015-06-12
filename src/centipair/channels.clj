@@ -4,8 +4,7 @@
              :refer [>! <! >!! <!! go chan buffer close! thread
                      alts! alts!! timeout]]
             [centipair.core.contrib.mail :as mail]
-            [centipair.movies.data :refer [init-movie-channel
-                                           init-dvd-channel]]))
+            [centipair.movies.data :refer [initialize-movie-channels]]))
 
 
 (def mail-channel (chan))

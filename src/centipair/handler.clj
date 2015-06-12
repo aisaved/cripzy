@@ -1,6 +1,7 @@
 (ns centipair.handler
   (:require [compojure.core :refer [defroutes routes]]
             [centipair.routes.home :refer [home-routes]]
+            [centipair.movies.api :refer [api-movie-routes]]
             [centipair.middleware
              :refer [development-middleware production-middleware]]
             [centipair.session :as session]
@@ -71,7 +72,8 @@
 
 (def app
   (-> (routes
-        home-routes
-        base-routes)
+       api-movie-routes
+       home-routes
+       base-routes)
       development-middleware
       production-middleware))

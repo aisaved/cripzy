@@ -81,7 +81,7 @@
    :movie_writer (:Writer omdb-movie)
    :movie_release_date_theater_text (:Released omdb-movie)
    :movie_release_date_dvd_text (:DVD omdb-movie)
-   :movie_runtime (:Runtime rt-movie)
+   :movie_runtime (:Runtime omdb-movie)
    :movie_box_office_us (:BoxOffice omdb-movie)
    :movie_actors (:Actors omdb-movie)
    :movie_tomato_rating (:tomatoScore rt-movie)})
@@ -121,6 +121,7 @@
 
 (defn process-dvd
   [page-limit]
+  (println page-limit)
   (let [dvd-data (:results (fetch-rt-dvd page-limit))]
     (doseq [each dvd-data]
       (go
@@ -154,3 +155,10 @@
     (init-dvd-channel)
     (init-movie-channel)
     (init-rt-details-channel)))
+
+
+(defn init-data
+  []
+  (doseq [each (range 200 300)]
+    (go
+      (>! dvd-channel {:page each :limit 10}))))

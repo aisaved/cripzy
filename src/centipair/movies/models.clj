@@ -1,11 +1,9 @@
 (ns centipair.movies.models
   (:use korma.core
         korma.db
-        centipair.core.db.connection
-        centipair.core.contrib.mail
-        centipair.core.utilities.pagination)
-  (:require [centipair.core.contrib.time :as time])
-  )
+        centipair.core.db.connection)
+  (:require [centipair.core.contrib.time :as time]
+            [centipair.core.utilities.pagination :as pagination]))
 
 
 (defentity movie)
@@ -41,4 +39,10 @@
           (where {:movie_rt_id (Integer. rt-id)})))
 
 
-(defn get-movies [])
+(defn get-movies [page page-limit]
+  (let [offset-limit-params (pagination/offset-limit page page-limit)]
+    (select movie
+            (fields :movie_id :movie_title :movie_poster_thumbnail)
+            (order [:movie_release_date_dvd :movie_tomato_rating] :DESC)
+            (offset (:offset offset-limit-params))
+            (limit (:limit offset-limit-params)))))
