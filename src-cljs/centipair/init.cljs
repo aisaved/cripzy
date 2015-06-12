@@ -9,6 +9,6 @@
 (defn ^:export init! []
   (do
     (notifier/render-notifier-component)
-    (csrf/fetch-csrf-token)
+    ;;(csrf/fetch-csrf-token)
     ;;(render-components)
     ))

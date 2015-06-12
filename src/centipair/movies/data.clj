@@ -1,7 +1,8 @@
 (ns centipair.movies.data
     (:require [clj-http.client :as client]
               [cheshire.core :refer [parse-string]]
-              [centipair.movies.models :refer [create-movie]]
+              [centipair.movies.models :refer [create-movie
+                                               update-release-dates]]
               [clojure.core.async
                :as a
                :refer [>! <! >!! <!! go chan buffer close! thread
@@ -16,8 +17,14 @@
 (def movie-channel (chan))
 (def dvd-channel (chan))
 
+(def rt-details-channel (chan))
+
 (def omdb-base-url "http://www.omdbapi.com/")
 (def rt-direct-base-url "http://www.rottentomatoes.com/api/private/v1.0/m/list/find")
+
+(def rt-api-key "54whembgwjzstgs3gdujxxuw")
+
+(def rt-base-url "http://api.rottentomatoes.com/api/public/v1.0/movies/")
 
 
 (defn fetch-data
@@ -29,9 +36,14 @@
     response-json))
 
 
+(defn fetch-rt-detailed
+  [rt-id]
+  (fetch-data (str rt-base-url rt-id ".json")
+              {:apikey rt-api-key}))
 
 
-(defn fetch-omdb [title]
+(defn fetch-omdb
+  [title]
   (fetch-data omdb-base-url
               {:t title
                :r "json"
@@ -40,13 +52,21 @@
                }))
 
 
-(defn fetch-rt-dvd [page-limit]
+(defn fetch-rt-dvd
+  [page-limit]
   (fetch-data rt-direct-base-url
               {:page (:page page-limit)
                :limit (:limit page-limit)
                :type "dvd-all"
                :services "amazon;amazon_prime;flixster;hbo_go;itunes;netflix_iw;vudu"
                :sortBy "release"}))
+
+
+
+(defn add-release-dates
+  [rt-id]
+  (let [rt-details-data (fetch-rt-detailed rt-id)]
+    (update-release-dates rt-id (:release_dates rt-details-data))))
 
 
 (defn omdb-params
@@ -66,11 +86,6 @@
    :movie_actors (:Actors omdb-movie)
    :movie_tomato_rating (:tomatoScore rt-movie)})
 
-
-(defn rt-params
-  [rt-movie]
-  
-  )
 
 
 (defn save-movie
@@ -99,7 +114,9 @@
     
     (if (nil? (:Title omdb-movie))
       (println "movie not found")
-      (create-movie (omdb-params omdb-movie rt-movie)))))
+      (let [movie-db (create-movie (omdb-params omdb-movie rt-movie))]
+        (go 
+          (>! rt-details-channel (:id rt-movie)))))))
 
 
 (defn process-dvd
@@ -108,6 +125,13 @@
     (doseq [each dvd-data]
       (go
         (>! movie-channel each)))))
+
+
+(defn init-rt-details-channel
+  []
+  (go 
+    (while true
+      (add-release-dates (<! rt-details-channel)))))
 
 
 (defn init-movie-channel
@@ -122,3 +146,11 @@
   (go 
     (while true
       (process-dvd (<! dvd-channel)))))
+
+
+(defn initialize-movie-channels
+  []
+  (do
+    (init-dvd-channel)
+    (init-movie-channel)
+    (init-rt-details-channel)))
