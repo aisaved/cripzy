@@ -11,6 +11,29 @@
 
 (def row-count (atom 0))
 
+
+(defn prepare-movie-data
+  [data-list]
+  (let [partition-data (partition-all 6 data-list)
+        added-data (concat (:data @movie-list-data) partition-data)]
+    (swap! movie-list-data assoc :data added-data)))
+
+(defn fetch-movie-list
+  []
+  (ajax/get-json 
+   "/api/1/movies/dvd"
+   {:page (:page @movie-list-data)
+    :limit (:limit @movie-list-data)}
+   (fn [response]
+     (prepare-movie-data response))))
+
+(defn load-more
+  []
+  (let [next-page (inc (:page @movie-list-data))]
+    (swap! movie-list-data assoc :page next-page))
+  (fetch-movie-list))
+
+
 (defn movie-block
   [movie]
   [:div {:class "col-md-2 text-center"
@@ -49,23 +72,14 @@
 (defn movie-list
   []
   [:div
-   (doall (map movie-row (:data @movie-list-data)))])
+   (doall (map movie-row (:data @movie-list-data)))
+   [:button {:class "btn btn-lg btn-block"
+             :type "button"
+             :on-click #(load-more)} "Load more"]])
 
 
 
-(defn prepare-movie-data
-  [data-list]
-  (let [partition-data (partition-all 6 data-list)]
-    (swap! movie-list-data assoc :data partition-data)))
 
-(defn fetch-movie-list
-  []
-  (ajax/get-json 
-   "/api/1/movies/dvd"
-   {:page (:page @movie-list-data)
-    :limit (:limit @movie-list-data)}
-   (fn [response]
-     (prepare-movie-data response))))
 
 (defn render-movie-list []
   (fetch-movie-list)

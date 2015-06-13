@@ -13,6 +13,11 @@
 (defn get-movie-rt [rt-id]
   (select movie (fields :movie_rt_id) (where {:movie_rt_id (Integer. rt-id)})))
 
+
+(defn get-movie [id]
+  (first (select movie (where {:movie_id (Integer. id)}))))
+
+
 (defn create-movie
   "Inserts movie data into db"
   [params]

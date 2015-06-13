@@ -1,7 +1,7 @@
-(defproject centipair "0.1.0-SNAPSHOT"
+(defproject cripzy "0.1.0-SNAPSHOT"
 
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "Cripzy movie database"
+  :url "http://cripzy.com"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [selmer "0.8.2"]
@@ -42,7 +42,7 @@
                  [cheshire "5.5.0"]]
 
   :min-lein-version "2.0.0"
-  :uberjar-name "centipair.jar"
+  :uberjar-name "cripzy.jar"
   :jvm-opts ["-server"]
 
 ;;enable to start the nREPL server when the application launches
@@ -70,7 +70,7 @@
       :pretty-print true}}}}
   
   :immutant {:war 
-           {:context-path "/"}}
+             {:context-path "/"}}
   
   :profiles
   {:uberjar {:omit-source true
