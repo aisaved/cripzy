@@ -47,7 +47,10 @@
 (defn get-movies [page page-limit]
   (let [offset-limit-params (pagination/offset-limit page page-limit)]
     (select movie
-            (fields :movie_id :movie_title :movie_poster_thumbnail)
+            (fields :movie_id
+                    :movie_title
+                    :movie_poster_thumbnail
+                    :movie_tomato_rating)
             (order [:movie_release_date_dvd :movie_tomato_rating] :DESC)
             (offset (:offset offset-limit-params))
             (limit (:limit offset-limit-params)))))

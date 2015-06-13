@@ -1,6 +1,7 @@
 (ns centipair.movies.dvd
   (:require [reagent.core :as reagent]
             [centipair.core.ui :as ui]
+            [centipair.core.utilities.validators :as v]
             [centipair.core.utilities.ajax :as ajax]))
 
 
@@ -47,17 +48,24 @@
           :key (str "movie-link-" (:movie_id movie))
           }
       [:img {:src (:movie_poster_thumbnail movie)
-             ;;:width "130px"
-             ;;:height "190px"
-             :class "img-responsive"
+             :width "180px"
+             :height "245px"
+             ;;:class "img-responsive"
              :id (str "movie-poster-" (:movie_id movie))
              :key (str "movie-poster-" (:movie_id movie))}]]]
    [:div {:class "text-center"
           :id (str "movie-info-container-" (:movie_id movie))
           :key (str "movie-infor-container-" (:movie_id movie))}
-    [:span {:id (str "movie-title-" (:movie_id movie))
-            :key (str "movie-title-" (:movie_id movie))} 
-     (:movie_title movie)]]])
+    [:h6 {:id (str "movie-title-" (:movie_id movie))
+          :key (str "movie-title-" (:movie_id movie))}
+     (:movie_title movie)]
+    [:span
+     {:id (str "movie-rating-" (:movie_id movie))
+      :key (str "movie-rating-" (:movie_id movie))}
+     (if (v/has-value? (:movie_tomato_rating movie))
+       (str "Rating: " (:movie_tomato_rating movie) " %")
+       "")]
+    ]])
 
 
 (defn movie-row
