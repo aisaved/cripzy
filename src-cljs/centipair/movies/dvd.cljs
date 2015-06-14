@@ -8,7 +8,8 @@
 
 (def movie-list-data (reagent/atom {:page 1
                                     :limit 30
-                                    :data []}))
+                                    :data []
+                                    :load-more "block"}))
 
 (def row-count (atom 0))
 
@@ -77,18 +78,50 @@
    (doall (map movie-block row))])
 
 
+(def search-query (reagent/atom {:id "search-query" :value ""}))
+
+
+(defn do-search []
+  (ajax/get-json 
+   "/api/1/movies/search"
+   {:q (:value @search-query)}
+   (fn [response]
+     (swap! movie-list-data assoc :data [])
+     (swap! movie-list-data assoc :load-more "none")
+     (prepare-movie-data response))))
+
+(defn search-form []
+  [:div {:class "input-group"}
+   [:div {:class "input-group"}
+    [:input {:type "text"
+             :class "form-control"
+             :placeholder "Search movies"
+             :value (:value @search-query)
+             :on-change #(swap! search-query assoc :value (-> % .-target .-value))
+             }] ;<input type="text" class="form-control" placeholder="Search for...">
+    [:div {:class "input-group-btn"}
+     [:button {:class "btn btn-default"
+               :type "button"
+               :on-click #(do-search)} [:i {:class "fa fa-search"}]]]]])
+
+
+
 (defn movie-list
   []
   [:div
    (doall (map movie-row (:data @movie-list-data)))
    [:button {:class "btn btn-lg btn-block"
              :type "button"
-             :on-click #(load-more)} "Load more"]])
+             :on-click #(load-more)
+             :style {:display (:load-more @movie-list-data)}} "Load more"]])
 
 
 
 
 
 (defn render-movie-list []
+  (swap! movie-list-data assoc :load-more "block")
   (fetch-movie-list)
-  (ui/render movie-list "movie-list"))
+  (ui/render movie-list "movie-list")
+  (ui/render search-form "search-form")
+  )

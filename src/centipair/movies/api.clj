@@ -16,5 +16,15 @@
                  (get-in context [:request :params :limit])))))
 
 
+(defresource api-search [& [source]]
+  :available-media-types ["application/json"]
+  :allowed-methods [:get]
+  :handle-ok (fn [context]
+               (response/liberator-json-response
+                (movie-models/search-movies
+                 (get-in context [:request :params :q])))))
+
+
 (defroutes api-movie-routes
-  (GET "/api/1/movies/dvd" [] (api-dvd-releases)))
+  (GET "/api/1/movies/dvd" [] (api-dvd-releases))
+  (GET "/api/1/movies/search" [] (api-search)))

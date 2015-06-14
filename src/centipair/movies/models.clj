@@ -54,3 +54,8 @@
             (order [:movie_release_date_dvd :movie_tomato_rating] :DESC)
             (offset (:offset offset-limit-params))
             (limit (:limit offset-limit-params)))))
+
+
+(defn search-movies
+  [query]
+  (exec-raw ["SELECT movie_id,movie_title,movie_poster_thumbnail,movie_tomato_rating FROM movie WHERE movie_title ILIKE ? ORDER BY movie_release_date_dvd,movie_tomato_rating ;" [(str "%" query "%")]] :results))

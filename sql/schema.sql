@@ -124,6 +124,7 @@ CREATE TABLE movie(
        movie_actors text,
        movie_tomato_rating integer
        );
+CREATE INDEX movie_rt_id_index on movie (movie_rt_id);
 
 CREATE TABLE data_log(
        data_log_id serial PRIMARY KEY,
