@@ -1,5 +1,6 @@
 (ns centipair.movies.data
     (:require [clj-http.client :as client]
+              [taoensso.timbre :as timbre]
               [cheshire.core :refer [parse-string]]
               [centipair.movies.models :refer [create-movie
                                                update-release-dates]]
@@ -109,11 +110,9 @@
   "
   [rt-movie]
   (let [omdb-movie (fetch-omdb (:title rt-movie))]
-    
-    (println "####################---saving movie---#####################")
-    
+    (timbre/info "Saving movie to db")
     (if (nil? (:Title omdb-movie))
-      (println "movie not found")
+      (timbre/warn "Movie not found")
       (let [movie-db (create-movie (omdb-params omdb-movie rt-movie))]
         (go 
           (>! rt-details-channel (:id rt-movie)))))))
@@ -121,7 +120,6 @@
 
 (defn process-dvd
   [page-limit]
-  (println page-limit)
   (let [dvd-data (:results (fetch-rt-dvd page-limit))]
     (doseq [each dvd-data]
       (go
@@ -158,7 +156,7 @@
 
 
 (defn init-data
-  []
-  (doseq [each (range 200 300)]
+  [start end limit]
+  (doseq [each (range start end)]
     (go
-      (>! dvd-channel {:page each :limit 10}))))
+      (>! dvd-channel {:page each :limit limit}))))

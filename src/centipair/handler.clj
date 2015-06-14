@@ -2,6 +2,7 @@
   (:require [compojure.core :refer [defroutes routes]]
             [centipair.routes.home :refer [home-routes]]
             [centipair.movies.api :refer [api-movie-routes]]
+            [centipair.movies.jobs :refer [start-scheduler]]
             [centipair.middleware
              :refer [development-middleware production-middleware]]
             [centipair.session :as session]
@@ -29,7 +30,6 @@
       (timbre/info "nREPL server started on port" port)
       (catch Throwable t
         (timbre/error "failed to start nREPL" t)))))
-
 (defn stop-nrepl []
   (when-let [server @nrepl-server]
     (nrepl/stop-server server)))
@@ -58,8 +58,8 @@
   (cronj/start! session/cleanup-job)
   (timbre/info "\n-=[ centipair started successfully"
                (when (env :dev) "using the development profile") "]=-")
-  (channels/init-async-channels)
-  )
+  ;;(channels/init-async-channels)
+  (start-scheduler))
 
 (defn destroy
   "destroy will be called when your application

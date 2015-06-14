@@ -38,6 +38,7 @@
                  [cljs-ajax "0.3.11"]
                  [com.lucasbradstreet/cljs-uuid-utils "1.0.1"]
                  [org.immutant/web "2.0.0"]
+                 [org.immutant/scheduling "2.0.0"]
                  [clj-http "1.1.2"]
                  [cheshire "5.5.0"]]
 
