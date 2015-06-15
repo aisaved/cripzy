@@ -1,6 +1,7 @@
 (ns centipair.movies.dvd
   (:require [reagent.core :as reagent]
             [centipair.core.ui :as ui]
+            [centipair.core.components.notifier :as notifier]
             [centipair.core.utilities.validators :as v]
             [centipair.core.utilities.ajax :as ajax]))
 
@@ -86,13 +87,17 @@
    "/api/1/movies/search"
    {:q (:value @search-query)}
    (fn [response]
-     (swap! movie-list-data assoc :data [])
-     (swap! movie-list-data assoc :load-more "none")
-     (prepare-movie-data response))))
+     (if (empty? response)
+       (do
+         (notifier/notify 422 "Search results not found"))
+       (do 
+         (swap! movie-list-data assoc :data [])
+         (swap! movie-list-data assoc :load-more "none")
+         (prepare-movie-data response))))))
 
 
 (defn search-form []
-  [:form {:class "form-inline"}
+  [:div {:class "form-inline"}
    [:div {:class "form-group"}
     [:input {:type "text"
              :class "form-control"
