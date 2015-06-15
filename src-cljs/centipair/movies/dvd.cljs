@@ -90,19 +90,21 @@
      (swap! movie-list-data assoc :load-more "none")
      (prepare-movie-data response))))
 
+
 (defn search-form []
-  [:div {:class "input-group"}
-   [:div {:class "input-group"}
+  [:form {:class "form-inline"}
+   [:div {:class "form-group"}
     [:input {:type "text"
              :class "form-control"
              :placeholder "Search movies"
              :value (:value @search-query)
              :on-change #(swap! search-query assoc :value (-> % .-target .-value))
-             }] ;<input type="text" class="form-control" placeholder="Search for...">
-    [:div {:class "input-group-btn"}
-     [:button {:class "btn btn-default"
+             
+            }]]
+   
+   [:button {:class "btn btn-default"
                :type "button"
-               :on-click #(do-search)} [:i {:class "fa fa-search"}]]]]])
+               :on-click #(do-search)} "Search"]])
 
 
 
