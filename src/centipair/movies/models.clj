@@ -18,6 +18,13 @@
   (first (select movie (where {:movie_id (Integer. id)}))))
 
 
+(defn get-movie-url [id url-slug]
+  (let [movie-obj (get-movie id)]
+    (if (= (:movie_url_slug movie-obj) url-slug)
+      movie-obj
+      nil)))
+
+
 (defn create-movie
   "Inserts movie data into db"
   [params]
@@ -50,7 +57,8 @@
             (fields :movie_id
                     :movie_title
                     :movie_poster_thumbnail
-                    :movie_tomato_rating)
+                    :movie_tomato_rating
+                    :movie_url_slug)
             (order [:movie_release_date_dvd :movie_tomato_rating] :DESC)
             (offset (:offset offset-limit-params))
             (limit (:limit offset-limit-params)))))
@@ -58,4 +66,4 @@
 
 (defn search-movies
   [query]
-  (exec-raw ["SELECT movie_id,movie_title,movie_poster_thumbnail,movie_tomato_rating FROM movie WHERE movie_title ILIKE ? ORDER BY movie_release_date_dvd,movie_tomato_rating ;" [(str "%" query "%")]] :results))
+  (exec-raw ["SELECT movie_id,movie_title,movie_poster_thumbnail,movie_tomato_rating,movie_url_slug FROM movie WHERE movie_title ILIKE ? ORDER BY movie_release_date_dvd,movie_tomato_rating ;" [(str "%" query "%")]] :results))

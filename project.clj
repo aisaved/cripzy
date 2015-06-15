@@ -40,7 +40,8 @@
                  [org.immutant/web "2.0.0"]
                  [org.immutant/scheduling "2.0.0"]
                  [clj-http "1.1.2"]
-                 [cheshire "5.5.0"]]
+                 [cheshire "5.5.0"]
+                 [slugger "1.0.1"]]
 
   :min-lein-version "2.0.0"
   :uberjar-name "cripzy.jar"

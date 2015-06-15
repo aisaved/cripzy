@@ -122,7 +122,8 @@ CREATE TABLE movie(
        movie_runtime varchar(20),
        movie_box_office_us varchar(20),
        movie_actors text,
-       movie_tomato_rating integer
+       movie_tomato_rating integer,
+       movie_url_slug varchar(1024)
        );
 CREATE INDEX movie_rt_id_index on movie (movie_rt_id);
 

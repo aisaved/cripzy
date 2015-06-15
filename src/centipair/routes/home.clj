@@ -12,10 +12,13 @@
     "home.html" ))
 
 
-(defn movie-page [id]
-  (let [movie-info (movie-models/get-movie id)]
-    (layout/render
-    "movie.html" movie-info)))
+(defn movie-page [id url-slug]
+  (let [movie-info (movie-models/get-movie-url id url-slug)]
+    (if (nil? movie-info)
+      (layout/render
+       "404.html" movie-info)
+      (layout/render
+       "movie.html" movie-info) )))
 
 
 (defn csrf-token []
@@ -24,4 +27,4 @@
 
 (defroutes home-routes
   (GET "/" [] (home-page))
-  (GET "/movie/:id" [id] (movie-page id)))
+  (GET "/movie/:id/:url-slug" [id url-slug] (movie-page id url-slug)))

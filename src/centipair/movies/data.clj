@@ -4,6 +4,7 @@
               [cheshire.core :refer [parse-string]]
               [centipair.movies.models :refer [create-movie
                                                update-release-dates]]
+              [slugger.core :as slugger]
               [clojure.core.async
                :as a
                :refer [>! <! >!! <!! go chan buffer close! thread
@@ -85,7 +86,8 @@
    :movie_runtime (:Runtime omdb-movie)
    :movie_box_office_us (:BoxOffice omdb-movie)
    :movie_actors (:Actors omdb-movie)
-   :movie_tomato_rating (:tomatoScore rt-movie)})
+   :movie_tomato_rating (:tomatoScore rt-movie)
+   :movie_url_slug (slugger/->slug (:title rt-movie))})
 
 
 

@@ -45,7 +45,7 @@
     [:div {:class "text-center"
            :id (str "movie-poster-container" (:movie_id movie))
            :key (str "movie-poster-container" (:movie_id movie))}
-     [:a {:href (str "/movie/" (:movie_id movie))
+     [:a {:href (str "/movie/" (:movie_id movie) "/" (:movie_url_slug movie))
           :id (str "movie-link-" (:movie_id movie))
           :key (str "movie-link-" (:movie_id movie))
           }
